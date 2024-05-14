@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/favorite.dart';
+import 'package:flutter_application_1/screens/cart_page.dart';
 import 'package:flutter_application_1/screens/profile_page.dart';
 import 'package:flutter_application_1/widgets/product_card.dart';
 import 'package:flutter_application_1/screens/product_details_page.dart';
@@ -68,13 +70,19 @@ class _ProductListPageState extends State<ProductListPage> {
           IconButton(
             icon: Icon(Icons.favorite),
             onPressed: () {
-              // Ação ao clicar no botão de carrinho
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavoritePage()),
+              );
             },
           ),
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Ação ao clicar no botão de carrinho
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartPage(product: null,)),
+              );
             },
           ),
         ],

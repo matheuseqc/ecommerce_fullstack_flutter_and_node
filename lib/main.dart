@@ -5,6 +5,7 @@ import 'package:flutter_application_1/screens/product_list_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
+
 void main() {
   runApp(MyApp());
 }
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(), // Define a tela de login como a inicial
+      home: ProductListPage(), // Define a tela de login como a inicial
     );
   }
 }
