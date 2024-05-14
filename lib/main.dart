@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/product_list_page.dart';
+import 'package:flutter_application_1/screens/product_list_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
