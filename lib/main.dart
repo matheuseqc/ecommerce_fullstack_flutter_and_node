@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ProductListPage(), // Define a tela de login como a inicial
+      home: LoginPage(), // Define a tela de login como a inicial
     );
   }
 }

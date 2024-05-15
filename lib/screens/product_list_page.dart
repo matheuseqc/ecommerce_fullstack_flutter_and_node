@@ -16,8 +16,6 @@ class ProductListPage extends StatefulWidget {
   _ProductListPageState createState() => _ProductListPageState();
 }
 
-
-
 class _ProductListPageState extends State<ProductListPage> {
   int _selectedIndex = 0;
   late Future<List<Product>> futureProducts;
@@ -25,7 +23,7 @@ class _ProductListPageState extends State<ProductListPage> {
   @override
   void initState() {
     super.initState();
-    futureProducts = _fetchProducts(); // Chama a função para buscar os produtos
+    futureProducts = _fetchProducts();
   }
 
   Future<List<Product>> _fetchProducts() async {
@@ -70,7 +68,7 @@ class _ProductListPageState extends State<ProductListPage> {
           IconButton(
             icon: Icon(Icons.favorite),
             onPressed: () {
-               Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => FavoritePage()),
               );

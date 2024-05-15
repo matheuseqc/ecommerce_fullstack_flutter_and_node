@@ -3,6 +3,9 @@ import 'package:flutter_application_1/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/product.dart'; 
 
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/product.dart';
+
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
 
@@ -29,6 +32,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
   }
 
+  double get totalPrice {
+    return widget.product.price * quantity;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +48,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Center(
-              child: Image.network(
+              child: Image.asset(
                 widget.product.image,
                 width: 200,
                 height: 200,
@@ -60,7 +67,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
             SizedBox(height: 16),
             Text(
-              'Preço: \$${widget.product.price.toStringAsFixed(2)}',
+              'Preço: \$${totalPrice.toStringAsFixed(2)}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
@@ -92,14 +99,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                 ),
                 SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Comprar agora
-                    },
-                    child: Text('Comprar Agora'),
-                  ),
-                ),
+                
               ],
             ),
           ],
