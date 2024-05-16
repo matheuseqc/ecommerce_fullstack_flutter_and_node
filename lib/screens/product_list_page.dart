@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/favorite.dart';
+import 'package:flutter_application_1/screens/favorite.dart';
 import 'package:flutter_application_1/screens/cart_page.dart';
 import 'package:flutter_application_1/screens/profile_page.dart';
 import 'package:flutter_application_1/widgets/product_card.dart';
@@ -8,7 +8,6 @@ import 'package:flutter_application_1/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 import '../models/product.dart';
-
 
 
 class ProductListPage extends StatefulWidget {
@@ -19,11 +18,13 @@ class ProductListPage extends StatefulWidget {
 class _ProductListPageState extends State<ProductListPage> {
   int _selectedIndex = 0;
   late Future<List<Product>> futureProducts;
+  late Future<List<int>> futureFavoriteProductIds;
 
   @override
   void initState() {
     super.initState();
     futureProducts = _fetchProducts();
+    futureFavoriteProductIds = _fetchFavoriteProductIds();
   }
 
   Future<List<Product>> _fetchProducts() async {
@@ -40,6 +41,17 @@ class _ProductListPageState extends State<ProductListPage> {
       Product(id: 10, title: 'Fone de ouvido', body: 'Fone de ouvido sem fio', price: 59.99, image: 'assets/imagens/fone.png'),
     ];
     return products;
+  }
+
+  Future<List<int>> _fetchFavoriteProductIds() async {
+    final response = await http.get(Uri.parse('http://localhost:3000/favorite'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<int> favoriteProductIds = data.map<int>((item) => item['productId']).toList();
+      return favoriteProductIds;
+    } else {
+      throw Exception('Erro ao buscar favoritos');
+    }
   }
 
   void _onItemTapped(int index) {
@@ -70,7 +82,7 @@ class _ProductListPageState extends State<ProductListPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FavoritePage()),
+                MaterialPageRoute(builder: (context) => FavoritesPage()),
               );
             },
           ),
@@ -79,7 +91,7 @@ class _ProductListPageState extends State<ProductListPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CartPage(product: null,)),
+                MaterialPageRoute(builder: (context) => CartPage()),
               );
             },
           ),
@@ -87,14 +99,17 @@ class _ProductListPageState extends State<ProductListPage> {
       ),
       body: Center(
         child: _selectedIndex == 0
-            ? FutureBuilder<List<Product>>(
-                future: futureProducts,
+            ? FutureBuilder<List<dynamic>>(
+                future: Future.wait([futureProducts, futureFavoriteProductIds]),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Erro: ${snapshot.error}');
                   } else {
+                    List<Product> products = snapshot.data![0] as List<Product>;
+                    List<int> favoriteProductIds = snapshot.data![1] as List<int>;
+
                     return GridView.builder(
                       padding: EdgeInsets.all(10.0),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -102,18 +117,21 @@ class _ProductListPageState extends State<ProductListPage> {
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
                       ),
-                      itemCount: snapshot.data!.length,
+                      itemCount: products.length,
                       itemBuilder: (context, index) {
+                        bool isFavorite = favoriteProductIds.contains(products[index].id);
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ProductDetailsPage(product: snapshot.data![index])),
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailsPage(product: products[index]),
+                              ),
                             );
                           },
                           child: Container(
                             margin: EdgeInsets.all(5.0),
-                            child: ProductCard(product: snapshot.data![index]),
+                            child: ProductCard(product: products[index], isFavorite: isFavorite),
                           ),
                         );
                       },

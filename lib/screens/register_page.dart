@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
               width: 400,
-              height: 651,
+              height: 597,
             child: Form(
               key: _formKey,
               child: Center(
@@ -40,12 +40,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     Image.asset(
                     'assets/imagens/regis.png',
                     width: 350,
-                    height: 318,
+                    height: 250,
                     
                   ),
                     SizedBox(width: 16),
                     SizedBox(
-                      width: 350,
+                      width: 290,
                       child: Container(
                         color: Colors.white,
                         child: TextFormField(
@@ -70,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(height: 16),
 
                     SizedBox(
-                      width: 350,
+                      width: 290,
                       child: Container(
                         color: Colors.white,
                         child: TextFormField(
@@ -94,8 +94,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     SizedBox(height: 16),
                     SizedBox(
-                      width: 350,
+                      width: 290,
                       child: Container(
+                        
                         color: Colors.white,
                         child: TextFormField(
                           decoration: InputDecoration(
@@ -130,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 30),
                     SizedBox(
-                      width: 350,
+                      width: 290,
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {

@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
               ),
             ],
           ),
-          width: 400,
+          width: 350,
           height: 400,
           
           child: Padding(

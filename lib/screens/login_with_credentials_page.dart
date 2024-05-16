@@ -30,7 +30,7 @@ class _LoginWithCredentialsPageState extends State<LoginWithCredentialsPage> {
               ],
             ),
             width: 400,
-            height: 600,
+            height: 500,
             child: Form(
               key: _formKey,
               child: Column(
@@ -39,12 +39,11 @@ class _LoginWithCredentialsPageState extends State<LoginWithCredentialsPage> {
                   Image.asset(
                     'assets/imagens/login.png',
                     width: 350,
-                    height: 350,
+                    height: 250,
                   ),
                   SizedBox(
-                    width: 350,
+                    width: 290,
                     child: Container(
-                      
                       color: Colors.white,
                       child: TextFormField(
                         decoration: InputDecoration(
@@ -67,7 +66,7 @@ class _LoginWithCredentialsPageState extends State<LoginWithCredentialsPage> {
                   ),
                   SizedBox(height: 16),
                   SizedBox(
-                    width: 350,
+                    width: 290,
                     child: Container(
                       color: Colors.white,
                       child: TextFormField(
@@ -91,6 +90,7 @@ class _LoginWithCredentialsPageState extends State<LoginWithCredentialsPage> {
                             ),
                             onPressed: () {
                               setState(() {
+                                
                                 _obscureText = !_obscureText;
                               });
                             },
@@ -106,14 +106,14 @@ class _LoginWithCredentialsPageState extends State<LoginWithCredentialsPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   SizedBox(
-                    width: 350,
+                    width: 290,
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Implementar lógica de login
-                        } else{
+                        } else {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

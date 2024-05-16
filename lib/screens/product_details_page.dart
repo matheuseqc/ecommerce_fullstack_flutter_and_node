@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/product.dart'; 
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/product.dart'; 
-
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../models/product.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -32,8 +29,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
   }
 
-  double get totalPrice {
-    return widget.product.price * quantity;
+  Future<void> _addToCart() async {
+    final url = Uri.parse('http://localhost:3000/cart/add');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'productId': widget.product.id,
+        'quantity': quantity,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Produto adicionado ao carrinho'), backgroundColor: Colors.green,),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao adicionar produto ao carrinho'), backgroundColor: Colors.red,),
+      );
+    }
   }
 
   @override
@@ -48,7 +63,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Center(
-              child: Image.asset(
+              child: Image.network(
                 widget.product.image,
                 width: 200,
                 height: 200,
@@ -67,7 +82,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
             SizedBox(height: 16),
             Text(
-              'Preço: \$${totalPrice.toStringAsFixed(2)}',
+              'Preço: \$${(widget.product.price * quantity).toStringAsFixed(2)}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
@@ -92,9 +107,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               children: <Widget>[
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Adicionar ao carrinho
-                    },
+                    onPressed: _addToCart,
                     child: Text('Adicionar ao Carrinho'),
                   ),
                 ),
