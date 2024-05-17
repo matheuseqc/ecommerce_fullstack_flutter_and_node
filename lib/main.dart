@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/home.dart';
 import 'package:flutter_application_1/screens/login_page.dart';
 import 'package:flutter_application_1/screens/product_list_page.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(), // Define a tela de login como a inicial
+      home: ProductListPage(username: 'matheus',), // Define a tela de login como a inicial
     );
   }
 }

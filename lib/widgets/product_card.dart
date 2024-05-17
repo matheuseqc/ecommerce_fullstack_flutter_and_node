@@ -7,8 +7,9 @@ import '../screens/product_details_page.dart';
 class ProductCard extends StatefulWidget {
   final Product product;
   final bool isFavorite;
+  final VoidCallback onFavoriteTap;
 
-  ProductCard({required this.product, required this.isFavorite});
+  ProductCard({required this.product, required this.isFavorite, required this.onFavoriteTap});
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -47,9 +48,7 @@ class _ProductCardState extends State<ProductCard> {
                     Icons.favorite,
                     color: _isFavorite ? Colors.red : Colors.grey,
                   ),
-                  onPressed: () {
-                    _toggleFavorite();
-                  },
+                  onPressed: _isFavorite ? null : _toggleFavorite, // Desabilita o botão se já for favorito
                 ),
               ],
             ),
@@ -80,7 +79,7 @@ class _ProductCardState extends State<ProductCard> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/favorite'),
+        Uri.parse('http://localhost:3000/favorite/add'),
         body: jsonEncode({'productId': widget.product.id}),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -101,3 +100,4 @@ class _ProductCardState extends State<ProductCard> {
     }
   }
 }
+

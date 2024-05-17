@@ -29,6 +29,20 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  Future<void> _removeCartItem(int cartItemId) async {
+    final url = Uri.parse('http://localhost:3000/cart/$cartItemId');
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      // Recarregar a lista de itens do carrinho após a remoção
+      setState(() {
+        futureCartItems = _fetchCartItems();
+      });
+    } else {
+      throw Exception('Erro ao remover item do carrinho');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +63,11 @@ class _CartPageState extends State<CartPage> {
             Map<int, CartItem> groupedItems = {};
             snapshot.data!.forEach((item) {
               if (groupedItems.containsKey(item.product.id)) {
-                groupedItems[item.product.id]!.quantity += item.quantity;
+                groupedItems[item.product.id] = CartItem(
+                  id: item.id,
+                  product: item.product,
+                  quantity: groupedItems[item.product.id]!.quantity + item.quantity,
+                );
               } else {
                 groupedItems[item.product.id] = item;
               }
@@ -71,13 +89,23 @@ class _CartPageState extends State<CartPage> {
                         leading: Image.network(item.product.image),
                         title: Text(item.product.title),
                         subtitle: Text('Quantidade: ${item.quantity}'),
-                        trailing: Text(
-                            'Total: \$${(item.product.price * item.quantity).toStringAsFixed(2)}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Total: \$${(item.product.price * item.quantity).toStringAsFixed(2)}'),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              
+                              onPressed: () {
+                                _removeCartItem(item.id); // Chame a função para remover o item
+                              },
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
                 ),
-               
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -89,7 +117,7 @@ class _CartPageState extends State<CartPage> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          
+                          // Implementar ação de compra
                         },
                         child: Text('Comprar Agora'),
                       ),

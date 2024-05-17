@@ -1,15 +1,21 @@
-import 'package:flutter_application_1/models/product.dart';
+import 'product.dart';
 
 class CartItem {
+  final int id;
   final Product product;
-  int quantity;
+  final int quantity;
 
-  CartItem({required this.product, required this.quantity});
+  CartItem({
+    required this.id,
+    required this.product,
+    required this.quantity,
+  });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
+      id: json['id'],
       product: Product.fromJson(json['product']),
-      quantity: json['quantity'] as int, 
+      quantity: json['quantity'],
     );
   }
 }

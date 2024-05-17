@@ -6,11 +6,14 @@ import 'package:flutter_application_1/screens/profile_page.dart';
 import 'package:flutter_application_1/widgets/product_card.dart';
 import 'package:flutter_application_1/screens/product_details_page.dart';
 import 'package:http/http.dart' as http;
-import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 
-
 class ProductListPage extends StatefulWidget {
+  final String username;
+
+  ProductListPage({required this.username});
+
   @override
   _ProductListPageState createState() => _ProductListPageState();
 }
@@ -58,6 +61,15 @@ class _ProductListPageState extends State<ProductListPage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _logout() async {
+    // Clear user data from shared preferences or any other storage
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Navigate back to the login screen
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -131,7 +143,7 @@ class _ProductListPageState extends State<ProductListPage> {
                           },
                           child: Container(
                             margin: EdgeInsets.all(5.0),
-                            child: ProductCard(product: products[index], isFavorite: isFavorite),
+                            child: ProductCard(product: products[index], isFavorite: isFavorite, onFavoriteTap: () {  },),
                           ),
                         );
                       },
@@ -139,7 +151,10 @@ class _ProductListPageState extends State<ProductListPage> {
                   }
                 },
               )
-            : ProfilePage(),
+            : ProfilePage(
+                username: widget.username,
+                onLogout: _logout,
+              ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

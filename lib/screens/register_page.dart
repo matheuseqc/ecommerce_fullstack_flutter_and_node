@@ -1,6 +1,6 @@
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -10,11 +10,46 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _register() async {
+    final String username = _nameController.text; // Ensure this matches 'username' in backend
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+
+    final response = await http.post(
+      Uri.parse('http://localhost:3000/register'), // Substitute with your backend URL
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // User registered successfully
+      print('User registered successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Usuário registrado com sucesso!'), backgroundColor: Colors.green,),
+      );
+    } else {
+      // Error registering user
+      print('Error registering user: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error registering user: ${response.body}'), backgroundColor: Colors.red,),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cadastrar')),
+      appBar: AppBar(title: Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -29,8 +64,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ],
             ),
-              width: 400,
-              height: 597,
+            width: 400,
+            height: 597,
             child: Form(
               key: _formKey,
               child: Center(
@@ -38,24 +73,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Image.asset(
-                    'assets/imagens/regis.png',
-                    width: 350,
-                    height: 250,
-                    
-                  ),
+                      'assets/imagens/regis.png',
+                      width: 350,
+                      height: 250,
+                    ),
                     SizedBox(width: 16),
                     SizedBox(
                       width: 290,
                       child: Container(
                         color: Colors.white,
                         child: TextFormField(
+                          controller: _nameController,
                           decoration: InputDecoration(
                             labelText: 'Nome',
-                            prefixIcon: Icon(Icons.person, color: Colors.black,),
-                            //border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.person, color: Colors.black),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
                           validator: (value) {
@@ -68,19 +101,17 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     SizedBox(height: 16),
-
                     SizedBox(
                       width: 290,
                       child: Container(
                         color: Colors.white,
                         child: TextFormField(
+                          controller: _emailController,
                           decoration: InputDecoration(
                             labelText: 'Email',
-                            prefixIcon: Icon(Icons.email, color: Colors.black,),
-                            //border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.email, color: Colors.black),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
                           validator: (value) {
@@ -96,16 +127,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                       width: 290,
                       child: Container(
-                        
                         color: Colors.white,
                         child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Senha',
-                            prefixIcon: Icon(Icons.lock, color: Colors.black,),
-                            //border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.lock, color: Colors.black),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.white),
+                              borderSide: BorderSide(color: Colors.white),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -119,7 +149,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                           ),
-                          obscureText: _obscureText,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Por favor, insira sua senha';
@@ -135,12 +164,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // Implementar lógica de cadastro
+                            _register();
                           }
                         },
                         child: Text('Cadastrar'),
                         style: ElevatedButton.styleFrom(
-                          
                           padding: EdgeInsets.symmetric(vertical: 16),
                           textStyle: TextStyle(fontSize: 25),
                           shape: RoundedRectangleBorder(
@@ -159,3 +187,4 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+
