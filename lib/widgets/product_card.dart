@@ -79,7 +79,7 @@ class _ProductCardState extends State<ProductCard> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/favorite/add'),
+        Uri.parse('http://localhost:3333/favorite/add'),
         body: jsonEncode({'productId': widget.product.id}),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',

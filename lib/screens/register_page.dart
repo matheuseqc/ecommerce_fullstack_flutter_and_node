@@ -15,12 +15,12 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _register() async {
-    final String username = _nameController.text; // Ensure this matches 'username' in backend
+    final String username = _nameController.text;
     final String email = _emailController.text;
     final String password = _passwordController.text;
 
     final response = await http.post(
-      Uri.parse('http://localhost:3000/register'), // Substitute with your backend URL
+      Uri.parse('http://localhost:3333/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -32,16 +32,18 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     if (response.statusCode == 201) {
-      // User registered successfully
-      print('User registered successfully');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Usuário registrado com sucesso!'), backgroundColor: Colors.green,),
+        SnackBar(
+          content: Text('Usuário registrado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
-      // Error registering user
-      print('Error registering user: ${response.body}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error registering user: ${response.body}'), backgroundColor: Colors.red,),
+        SnackBar(
+          content: Text('Erro ao registrar usuário: ${response.body}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -49,13 +51,13 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(title: Text('Cadastro')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 173, 112, 184),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
@@ -77,88 +79,71 @@ class _RegisterPageState extends State<RegisterPage> {
                       width: 350,
                       height: 250,
                     ),
-                    SizedBox(width: 16),
+                    SizedBox(height: 16),
                     SizedBox(
                       width: 290,
-                      child: Container(
-                        color: Colors.white,
-                        child: TextFormField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Nome',
-                            prefixIcon: Icon(Icons.person, color: Colors.black),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira seu nome';
-                            }
-                            return null;
-                          },
+                      child: TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nome',
+                          prefixIcon: Icon(Icons.person),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira seu nome';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(height: 16),
                     SizedBox(
                       width: 290,
-                      child: Container(
-                        color: Colors.white,
-                        child: TextFormField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email, color: Colors.black),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira seu email';
-                            }
-                            return null;
-                          },
+                      child: TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira seu email';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(height: 16),
                     SizedBox(
                       width: 290,
-                      child: Container(
-                        color: Colors.white,
-                        child: TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscureText,
-                          decoration: InputDecoration(
-                            labelText: 'Senha',
-                            prefixIcon: Icon(Icons.lock, color: Colors.black),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscureText,
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                color: Colors.black,
-                                _obscureText ? Icons.visibility : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira sua senha';
-                            }
-                            return null;
-                          },
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira sua senha';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 12),
                     SizedBox(
                       width: 290,
                       child: ElevatedButton(
@@ -170,9 +155,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Text('Cadastrar'),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
-                          textStyle: TextStyle(fontSize: 25),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                       ),
@@ -187,4 +171,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-

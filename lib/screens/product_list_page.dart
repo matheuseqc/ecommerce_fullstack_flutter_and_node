@@ -47,7 +47,7 @@ class _ProductListPageState extends State<ProductListPage> {
   }
 
   Future<List<int>> _fetchFavoriteProductIds() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/favorite'));
+    final response = await http.get(Uri.parse('http://localhost:3333/favorite'));
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       List<int> favoriteProductIds = data.map<int>((item) => item['productId']).toList();
@@ -63,14 +63,18 @@ class _ProductListPageState extends State<ProductListPage> {
     });
   }
 
-  void _logout() async {
+void _logout() async {
+  try {
     // Clear user data from shared preferences or any other storage
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
     // Navigate back to the login screen
     Navigator.of(context).pushReplacementNamed('/login');
+  } catch (error) {
+    print('Erro ao fazer logout: $error');
   }
+}
 
   @override
   Widget build(BuildContext context) {

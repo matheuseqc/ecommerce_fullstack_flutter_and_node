@@ -4,9 +4,10 @@ const cors = require('cors');
 const cartController = require('./controllers/cartController');
 const favoriteController = require('./controllers/favoriteController');
 const UserController = require('./controllers/UserController');
+const index = require('./controllers/index');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3333;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -24,6 +25,10 @@ app.post('/favorite/add', favoriteController.addToFavorites);
 // Rotas de usuário
 app.post('/register', UserController.register);
 app.post('/login', UserController.login); 
+
+// Rota de pagamento Mercado Pago
+app.post('/create', index.create);
+
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

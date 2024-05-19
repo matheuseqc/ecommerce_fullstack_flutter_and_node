@@ -41,3 +41,12 @@ model Cart {
   quantity  Int
   product   Product  @relation(fields: [productId], references: [id])
 }
+
+model Payment {
+  id              Int       @id @default(autoincrement())
+  transaction_amount Float
+  description     String
+  email           String
+  identificationType String
+  number          String
+}

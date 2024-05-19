@@ -53,6 +53,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
+        color: Colors.white70,
         elevation: 3,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -94,7 +95,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Future<List<Product>> fetchFavorites() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/favorite'),
+        Uri.parse('http://localhost:3333/favorite'),
       );
 
       if (response.statusCode == 200) {
@@ -126,7 +127,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       }
 
       final response = await http.post(
-        Uri.parse('http://localhost:3000/favorite'),
+        Uri.parse('http://localhost:3333/favorite'),
         body: json.encode({'productId': productId}),
         headers: {'Content-Type': 'application/json'},
       );
@@ -138,7 +139,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
           futureFavorites = fetchFavorites();
         });
       } else {
-        throw Exception('Erro ao adicionar produto aos favoritos: ${response.statusCode}');
+        throw Exception(
+            'Erro ao adicionar produto aos favoritos: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao adicionar produto aos favoritos: $error');

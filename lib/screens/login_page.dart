@@ -11,18 +11,25 @@ class LoginPage extends StatelessWidget {
       body: Center(
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 173, 112, 184),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF6200EE),
+                Color(0xFF03DAC5),
+              ],
+            ),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.3),
                 blurRadius: 10,
+                offset: Offset(0, 5),
               ),
             ],
           ),
           width: 350,
           height: 400,
-          
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -34,13 +41,14 @@ class LoginPage extends StatelessWidget {
                   height: 150,
                   width: 350,
                 ),
-                SizedBox(height: 50),
-                const Text(
+                SizedBox(height: 30),
+                Text(
                   'Bem-vindo ao E-commerce',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(height: 30),
@@ -54,12 +62,15 @@ class LoginPage extends StatelessWidget {
                   },
                   child: Text('Entrar'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    foregroundColor: Colors.black, backgroundColor: Colors.white, padding: EdgeInsets.symmetric(vertical: 16.0),
                     textStyle: TextStyle(fontSize: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
-                ElevatedButton(
+                OutlinedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -68,9 +79,13 @@ class LoginPage extends StatelessWidget {
                     );
                   },
                   child: Text('Cadastrar'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white, padding: EdgeInsets.symmetric(vertical: 16),
                     textStyle: TextStyle(fontSize: 18),
+                    side: BorderSide(color: Colors.white),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ],

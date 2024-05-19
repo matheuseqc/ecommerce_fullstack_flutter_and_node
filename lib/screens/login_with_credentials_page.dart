@@ -2,7 +2,87 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/profile_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_1/screens/register_page.dart';
 import 'product_list_page.dart'; // Importe sua página de destino após o login
+
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 173, 112, 184),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          width: 350,
+          height: 400,
+          
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Image.asset(
+                  'assets/imagens/logo.png',
+                  height: 150,
+                  width: 350,
+                ),
+                SizedBox(height: 50),
+                const Text(
+                  'Bem-vindo ao E-commerce',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginWithCredentialsPage()),
+                    );
+                  },
+                  child: Text('Entrar'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegisterPage()),
+                    );
+                  },
+                  child: Text('Cadastrar'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class LoginWithCredentialsPage extends StatefulWidget {
   @override
@@ -22,7 +102,7 @@ Future<void> _login() async {
 
   try {
     final response = await http.post(
-      Uri.parse('http://localhost:3000/login'),
+      Uri.parse('http://localhost:3333/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -65,10 +145,11 @@ Future<void> _login() async {
       );
     }
   } catch (error) {
-    print('Erro ao fazer login: $error');
-    // Trate outros erros aqui, se necessário
+      print('Erro ao fazer login: $error');
+      // Trate outros erros aqui, se necessário
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +159,7 @@ Future<void> _login() async {
         child: Center(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 173, 112, 184),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
@@ -101,66 +182,48 @@ Future<void> _login() async {
                   ),
                   SizedBox(
                     width: 290,
-                    child: Container(
-                      color: Colors.white,
-                      child: TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.black),
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email, color: Colors.black),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira seu email';
-                          }
-                          return null;
-                        },
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira seu email';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   SizedBox(height: 16),
                   SizedBox(
                     width: 290,
-                    child: Container(
-                      color: Colors.white,
-                      child: TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.black),
-                          labelText: 'Senha',
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              color: Colors.black,
-                              _obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira sua senha';
-                          }
-                          return null;
-                        },
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira sua senha';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -173,13 +236,6 @@ Future<void> _login() async {
                         }
                       },
                       child: Text('Login'),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        textStyle: TextStyle(fontSize: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
                     ),
                   ),
                 ],

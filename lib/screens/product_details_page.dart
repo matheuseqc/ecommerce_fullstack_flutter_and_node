@@ -30,7 +30,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> _addToCart() async {
-    final url = Uri.parse('http://localhost:3000/cart/add');
+    final url = Uri.parse('http://localhost:3333/cart/add');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
