@@ -48,7 +48,7 @@ class _ProductCardState extends State<ProductCard> {
                     Icons.favorite,
                     color: _isFavorite ? Colors.red : Colors.grey,
                   ),
-                  onPressed: _isFavorite ? null : _toggleFavorite, // Desabilita o botão se já for favorito
+                  onPressed: _toggleFavorite,
                 ),
               ],
             ),
@@ -78,15 +78,23 @@ class _ProductCardState extends State<ProductCard> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:3333/favorite/add'),
-        body: jsonEncode({'productId': widget.product.id}),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
+      final response = await (_isFavorite
+          ? http.post(
+              Uri.parse('http://localhost:3333/favorite/add'),
+             body: jsonEncode({'productId': widget.product.id}),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+              },
+            )
+          : http.delete(
+              Uri.parse('http://localhost:3333/favorite/remove'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+              },
+              body: jsonEncode({'productId': widget.product.id}),
+            ));
 
-      if (response.statusCode != 201) {
+      if ((response.statusCode != 201 && _isFavorite) || (response.statusCode != 200 && !_isFavorite)) {
         setState(() {
           _isFavorite = !_isFavorite;
         });
@@ -98,6 +106,8 @@ class _ProductCardState extends State<ProductCard> {
       });
       print('Erro ao adicionar/remover favorito: $error');
     }
+
+    // Call the provided callback to update the parent state
+    widget.onFavoriteTap();
   }
 }
-

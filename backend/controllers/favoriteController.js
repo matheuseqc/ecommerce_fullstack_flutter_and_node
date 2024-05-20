@@ -16,18 +16,23 @@ exports.getFavorites = async (req, res) => {
 };
 
 exports.removeFromFavorites = async (req, res) => {
+    const { productId } = req.body;
     try {
-        const { productId } = req.body;
-
-        const favorite = await prisma.favorite.deleteMany({
+        const existingFavorite = await prisma.favorite.findFirst({
             where: {
                 productId: productId,
             },
         });
 
-        if (favorite.count === 0) {
-            return res.status(404).json({ error: 'Favorito não encontrado' });
+        if (!existingFavorite) {
+            return res.status(404).json({ error: 'Produto favorito não encontrado' });
         }
+
+        await prisma.favorite.delete({
+            where: {
+                id: existingFavorite.id,
+            },
+        });
 
         res.status(200).json({ message: 'Produto removido dos favoritos com sucesso' });
     } catch (error) {
@@ -35,6 +40,7 @@ exports.removeFromFavorites = async (req, res) => {
         res.status(500).json({ error: 'Erro ao remover produto dos favoritos' });
     }
 };
+
 
 exports.addToFavorites = async (req, res) => {
     try {
