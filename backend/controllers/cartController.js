@@ -5,25 +5,31 @@ exports.addToCart = async (req, res) => {
     const { productId, quantity } = req.body;
 
     try {
-        const product = await prisma.product.findUnique({
-            where: { id: productId },
+        const existingCartItem = await prisma.cart.findFirst({
+            where: { productId: productId },
         });
 
-        if (!product) {
-            return res.status(404).json({ error: 'Produto não encontrado' });
+        if (existingCartItem) {
+            // Se o item já estiver no carrinho, atualize apenas a quantidade
+            const updatedCartItem = await prisma.cart.update({
+                where: { id: existingCartItem.id },
+                data: { quantity: existingCartItem.quantity + quantity },
+                include: { product: true },
+            });
+            
+            res.json(updatedCartItem);
+        } else {
+
+            const newCartItem = await prisma.cart.create({
+                data: {
+                    productId: productId,
+                    quantity: quantity,
+                },
+                include: { product: true },
+            });
+            
+            res.json(newCartItem);
         }
-
-        const cartItem = await prisma.cart.create({
-            data: {
-                productId: productId,
-                quantity: quantity,
-            },
-            include: {
-                product: true,
-            },
-        });
-
-        res.json(cartItem);
     } catch (error) {
         res.status(500).json({ error: 'Erro ao adicionar ao carrinho' });
     }

@@ -51,7 +51,8 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cadastro')),
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
+      appBar: AppBar(title: Text('Cadastro'),backgroundColor: Color.fromARGB(255, 178, 201, 230),),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(

@@ -7,7 +7,8 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
       body: Center(
         child: Container(
           decoration: BoxDecoration(

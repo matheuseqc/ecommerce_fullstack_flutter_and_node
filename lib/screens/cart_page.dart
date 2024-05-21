@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/cart_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart'; // Importe o pacote url_launcher
-import 'dart:convert';
 import '../models/product.dart';
 
 class CartPage extends StatefulWidget {
@@ -40,6 +40,45 @@ class _CartPageState extends State<CartPage> {
       });
     } else {
       throw Exception('Erro ao remover item do carrinho');
+    }
+  }
+
+  Future<void> _addCartItem(int productId) async {
+    try {
+      final url = Uri.parse('http://localhost:3333/cart/add');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'productId': productId}),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          futureCartItems = _fetchCartItems();
+        });
+      } else {
+        throw Exception('Erro ao adicionar item ao carrinho');
+      }
+    } catch (error) {
+      print('Erro ao adicionar item ao carrinho: $error');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erro ao adicionar item ao carrinho'),
+            content: Text(
+                'Houve um erro ao adicionar o item ao carrinho. Por favor, tente novamente mais tarde.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Fechar'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -112,7 +151,9 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 178, 201, 230),
         title: Text('Carrinho'),
       ),
       body: FutureBuilder<List<CartItem>>(
@@ -170,7 +211,12 @@ class _CartPageState extends State<CartPage> {
                                 IconButton(
                                   icon: Icon(Icons.delete, color: Colors.red,),
                                   onPressed: () {
-                                    _removeCartItem(item.id);
+                                    _removeCartItem(item.id).then((_) {
+                                          // Após a remoção bem-sucedida, atualize os itens do carrinho
+                              setState(() {
+                                  futureCartItems = _fetchCartItems();
+                                      });
+                                });
                                   },
                                 ),
                               ],

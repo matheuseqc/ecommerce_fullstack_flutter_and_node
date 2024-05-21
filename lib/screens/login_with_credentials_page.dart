@@ -9,7 +9,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      
       body: Center(
         child: Container(
           decoration: BoxDecoration(
@@ -153,7 +153,8 @@ Future<void> _login() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Entrar')),
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
+      appBar: AppBar(title: Text('Entrar'),backgroundColor: Color.fromARGB(255, 178, 201, 230),),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(

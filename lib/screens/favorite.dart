@@ -22,7 +22,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 178, 201, 230),
         title: Text('Meus Favoritos'),
       ),
       body: FutureBuilder<List<Product>>(

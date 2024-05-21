@@ -9,7 +9,10 @@ class ProductCard extends StatefulWidget {
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
 
-  ProductCard({required this.product, required this.isFavorite, required this.onFavoriteTap});
+  ProductCard(
+      {required this.product,
+      required this.isFavorite,
+      required this.onFavoriteTap});
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -36,6 +39,7 @@ class _ProductCardState extends State<ProductCard> {
         );
       },
       child: Card(
+        shadowColor: Colors.black,
         elevation: 5,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +69,8 @@ class _ProductCardState extends State<ProductCard> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Preço: \$${widget.product.price!.toStringAsFixed(2)}', textAlign: TextAlign.center),
+            Text('Preço: \$${widget.product.price!.toStringAsFixed(2)}',
+                textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -81,7 +86,7 @@ class _ProductCardState extends State<ProductCard> {
       final response = await (_isFavorite
           ? http.post(
               Uri.parse('http://localhost:3333/favorite/add'),
-             body: jsonEncode({'productId': widget.product.id}),
+              body: jsonEncode({'productId': widget.product.id}),
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
               },
@@ -94,11 +99,13 @@ class _ProductCardState extends State<ProductCard> {
               body: jsonEncode({'productId': widget.product.id}),
             ));
 
-      if ((response.statusCode != 201 && _isFavorite) || (response.statusCode != 200 && !_isFavorite)) {
+      if ((response.statusCode != 201 && _isFavorite) ||
+          (response.statusCode != 200 && !_isFavorite)) {
         setState(() {
           _isFavorite = !_isFavorite;
         });
-        throw Exception('Erro ao adicionar/remover favorito: ${response.statusCode}');
+        throw Exception(
+            'Erro ao adicionar/remover favorito: ${response.statusCode}');
       }
     } catch (error) {
       setState(() {

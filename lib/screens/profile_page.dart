@@ -9,7 +9,9 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 178, 201, 230),
         title: Text('Perfil'),
         centerTitle: true,
         elevation: 0, // Remove a sombra do appbar

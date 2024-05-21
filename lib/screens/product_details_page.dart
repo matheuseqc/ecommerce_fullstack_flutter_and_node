@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/cart_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
@@ -28,33 +29,55 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
   }
+  Future<void> _fetchCartItems() async {
+  final url = Uri.parse('http://localhost:3333/cart');
+  final response = await http.get(url);
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+    List<CartItem> cartItems = data.map((item) => CartItem.fromJson(item)).toList();
+    setState(() {
+      cartItems = cartItems;
+    });
+  } else {
+    throw Exception('Erro ao buscar itens do carrinho');
+  }
+}
 
   Future<void> _addToCart() async {
-    final url = Uri.parse('http://localhost:3333/cart/add');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'productId': widget.product.id,
-        'quantity': quantity,
-      }),
+  final url = Uri.parse('http://localhost:3333/cart/add');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'productId': widget.product.id,
+      'quantity': quantity,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Produto adicionado ao carrinho'),
+        backgroundColor: Colors.green,
+      ),
     );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto adicionado ao carrinho'), backgroundColor: Colors.green,),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao adicionar produto ao carrinho'), backgroundColor: Colors.red,),
-      );
-    }
+    // Atualize a lista de itens do carrinho após adicionar um item
+    await _fetchCartItems();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao adicionar produto ao carrinho'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 178, 201, 230),
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 178, 201, 230),
         title: Text(widget.product.title),
       ),
       body: Padding(
