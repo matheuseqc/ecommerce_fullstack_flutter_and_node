@@ -1,6 +1,6 @@
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
-const accessToken = 'TEST-8805487557158039-051811-f57cff61de90ee78fd8f95dff55c9e05-447965093';
+const accessToken = process.env.API_KEY;
 const client = new MercadoPagoConfig({ accessToken });
 
 exports.create = async (req, res) => {
