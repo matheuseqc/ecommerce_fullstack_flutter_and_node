@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/login', // Define a rota inicial como a tela de login
       routes: {
-        '/login': (context) => ProductListPage(username: '',), // Define a rota da tela de login
+        '/login': (context) => LoginPage(), // Define a rota da tela de login
       },
     );
   }

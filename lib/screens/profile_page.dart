@@ -11,6 +11,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 178, 201, 230),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 178, 201, 230),
         title: Text('Perfil'),
         centerTitle: true,

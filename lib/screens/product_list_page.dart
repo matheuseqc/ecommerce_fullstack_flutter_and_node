@@ -204,6 +204,7 @@ Future<void> _addToCart(int productId) async {
       appBar: PreferredSize(
         preferredSize: Size(100, 60),
         child: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.blue,
           shadowColor: Colors.black,
           flexibleSpace: Container(
