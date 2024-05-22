@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/cart_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
+  final VoidCallback? onCartItemAdded; // Callback para notificar a adição ao carrinho
 
-  ProductDetailsPage({required this.product});
+  ProductDetailsPage({required this.product, this.onCartItemAdded});
 
   @override
   _ProductDetailsPageState createState() => _ProductDetailsPageState();
+
+  // Restante do código...
 }
+
+
+
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
@@ -29,49 +34,52 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
   }
+
   Future<void> _fetchCartItems() async {
-  final url = Uri.parse('http://localhost:3333/cart');
-  final response = await http.get(url);
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    List<CartItem> cartItems = data.map((item) => CartItem.fromJson(item)).toList();
-    setState(() {
-      cartItems = cartItems;
-    });
-  } else {
-    throw Exception('Erro ao buscar itens do carrinho');
+    final url = Uri.parse('http://localhost:3333/cart');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      // Atualize a lista de itens do carrinho após adicionar um item
+      setState(() {
+        // Atualize os cartItems com os dados recebidos
+        // cartItems = ...
+      });
+    } else {
+      throw Exception('Erro ao buscar itens do carrinho');
+    }
   }
-}
 
   Future<void> _addToCart() async {
-  final url = Uri.parse('http://localhost:3333/cart/add');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({
-      'productId': widget.product.id,
-      'quantity': quantity,
-    }),
-  );
+    final url = Uri.parse('http://localhost:3333/cart/add');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'productId': widget.product.id,
+        'quantity': quantity,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Produto adicionado ao carrinho'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    // Atualize a lista de itens do carrinho após adicionar um item
-    await _fetchCartItems();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Erro ao adicionar produto ao carrinho'),
-        backgroundColor: Colors.red,
-      ),
-    );
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Produto adicionado ao carrinho'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // Atualize a lista de itens do carrinho após adicionar um item
+      await _fetchCartItems();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao adicionar produto ao carrinho'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

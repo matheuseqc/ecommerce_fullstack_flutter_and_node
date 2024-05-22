@@ -23,14 +23,16 @@ class _ProductListPageState extends State<ProductListPage> {
   int _selectedIndex = 0;
   late Future<List<Product>> futureProducts;
   late Future<List<int>> futureFavoriteProductIds;
-  late Future<List<CartItem>> futureCartItems;
+  int _cartItemCount = 0;
+  int _favoriteItemCount = 0;
 
   @override
   void initState() {
     super.initState();
     futureProducts = _fetchProducts();
     futureFavoriteProductIds = _fetchFavoriteProductIds();
-    futureCartItems = _fetchCartItems();
+    _updateCartItemCount();
+    _updateFavoriteItemCount();
   }
 
   Future<List<Product>> _fetchProducts() async {
@@ -122,11 +124,36 @@ class _ProductListPageState extends State<ProductListPage> {
     }
   }
 
+  Future<void> _updateCartItemCount() async {
+    try {
+      List<CartItem> cartItems = await _fetchCartItems();
+      setState(() {
+        _cartItemCount = cartItems.map((item) => item.product).toSet().length;
+      });
+    } catch (error) {
+      print('Erro ao atualizar contagem de itens do carrinho: $error');
+    }
+  }
+
+  Future<void> _updateFavoriteItemCount() async {
+    try {
+      List<int> favoriteProductIds = await _fetchFavoriteProductIds();
+      setState(() {
+        _favoriteItemCount = favoriteProductIds.length;
+      });
+    } catch (error) {
+      print('Erro ao atualizar contagem de favoritos: $error');
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+  void _onCartItemAdded() {
+  _updateCartItemCount(); // Função para atualizar o contador do carrinho
+  }     
 
   void _logout() async {
     try {
@@ -137,6 +164,38 @@ class _ProductListPageState extends State<ProductListPage> {
       print('Erro ao fazer logout: $error');
     }
   }
+
+Future<void> _addToCart(int productId) async {
+  final url = Uri.parse('http://localhost:3333/cart/add');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'productId': productId,
+      'quantity': 1, // You can adjust the quantity as needed
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Produto adicionado ao carrinho'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    // Chama o callback para notificar a adição ao carrinho
+    _onCartItemAdded();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao adicionar produto ao carrinho'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +215,7 @@ class _ProductListPageState extends State<ProductListPage> {
               Image.asset(
                 'assets/imagens/logo.png',
                 width: 30,
-                height: 30,
-              ),
+                height: 30,              ),
               SizedBox(width: 10),
               Text('E-commerce'),
             ],
@@ -177,40 +235,30 @@ class _ProductListPageState extends State<ProductListPage> {
                     );
                   },
                 ),
-                FutureBuilder<List<int>>(
-                  future: futureFavoriteProductIds,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox();
-                    } else if (snapshot.hasError) {
-                      return SizedBox();
-                    } else {
-                      int favoriteCount = snapshot.data!.length;
-                      return Positioned(
-                        right: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            '$favoriteCount',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                if (_favoriteItemCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        '$_favoriteItemCount',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
-                      );
-                    }
-                  },
-                ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
               ],
             ),
             Stack(
@@ -224,43 +272,12 @@ class _ProductListPageState extends State<ProductListPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => CartPage()),
-                    );
+                    ).then((_) => _updateCartItemCount()); // Atualiza ao retornar
                   },
                 ),
-                FutureBuilder<List<CartItem>>(
-                  future: futureCartItems,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox();
-                    } else if (snapshot.hasError) {
-                      return SizedBox();
-                    } else {
-                      int cartItemCount = snapshot.data!.length;
-                      return Positioned(
-                        right: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            '$cartItemCount',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                
+                    
+                  
               ],
             ),
           ],
@@ -294,19 +311,40 @@ class _ProductListPageState extends State<ProductListPage> {
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailsPage(
-                                    product: products[index]),
-                              ),
-                            );
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProductDetailsPage(
+                                        product: products[index],
+                                        // Passa o callback para notificar a adição ao carrinho
+                                        onCartItemAdded: () {
+                                          _updateCartItemCount(); // Atualiza o contador do carrinho
+                                        },
+                                      ),
+                                    ),
+                                  
+                            ).then((_) {
+                              _updateCartItemCount();
+                              _updateFavoriteItemCount();
+                            });
                           },
                           child: Container(
                             margin: EdgeInsets.all(5.0),
                             child: ProductCard(
                               product: products[index],
                               isFavorite: isFavorite,
-                              onFavoriteTap: () {},
+                              onFavoriteTap: () {
+                                setState(() {
+                                  if (isFavorite) {
+                                    favoriteProductIds.remove(products[index].id);
+                                  } else {
+                                    favoriteProductIds.add(products[index].id);
+                                  }
+                                });
+                                _updateFavoriteItemCount();
+                              },
+                              onAddToCart: () {
+                                _addToCart(products[index].id);
+                              },
                             ),
                           ),
                         );
@@ -324,7 +362,7 @@ class _ProductListPageState extends State<ProductListPage> {
         backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.black,),
+            icon: Icon(Icons.home, color: Colors.black),
             label: 'Home',
           ),
           BottomNavigationBarItem(
@@ -339,3 +377,4 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 }
+

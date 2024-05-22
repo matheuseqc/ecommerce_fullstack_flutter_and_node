@@ -173,7 +173,7 @@ class _CartPageState extends State<CartPage> {
                   id: item.id,
                   product: item.product,
                   quantity: groupedItems[item.product.id]!.quantity +
-                      item.quantity,
+                      item.quantity, 
                 );
               } else {
                 groupedItems[item.product.id] = item;

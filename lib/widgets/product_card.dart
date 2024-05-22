@@ -9,10 +9,12 @@ class ProductCard extends StatefulWidget {
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
 
-  ProductCard(
-      {required this.product,
-      required this.isFavorite,
-      required this.onFavoriteTap});
+  ProductCard({
+    required this.product,
+    required this.isFavorite,
+    required this.onFavoriteTap,
+    required Null Function() onAddToCart,
+  });
 
   @override
   State<ProductCard> createState() => _ProductCardState();
