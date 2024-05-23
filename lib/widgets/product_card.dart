@@ -8,12 +8,13 @@ class ProductCard extends StatefulWidget {
   final Product product;
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
+  final VoidCallback onAddToCart;
 
   ProductCard({
     required this.product,
     required this.isFavorite,
     required this.onFavoriteTap,
-    required Null Function() onAddToCart,
+    required this.onAddToCart,
   });
 
   @override
@@ -58,7 +59,7 @@ class _ProductCardState extends State<ProductCard> {
                 ),
               ],
             ),
-            Image.network(
+            Image.asset(
               widget.product.image!,
               width: 100,
               height: 100,
@@ -73,6 +74,7 @@ class _ProductCardState extends State<ProductCard> {
             SizedBox(height: 8),
             Text('Preço: \$${widget.product.price!.toStringAsFixed(2)}',
                 textAlign: TextAlign.center),
+          
           ],
         ),
       ),

@@ -3,7 +3,7 @@ import 'product.dart';
 class CartItem {
   final int id;
   final Product product;
-  final int quantity;
+  late final int quantity;
 
   CartItem({
     required this.id,

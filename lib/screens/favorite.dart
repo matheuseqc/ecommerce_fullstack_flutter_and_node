@@ -35,7 +35,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Erro: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Nenhum favorito encontrado'));
+              return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/imagens/coracao.png',
+                          width: 100, 
+                          height: 100,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'NENHUM FAVORITO ENCONTRADO!',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  );
           } else {
             favoriteProducts = snapshot.data!;
             return ListView.builder(

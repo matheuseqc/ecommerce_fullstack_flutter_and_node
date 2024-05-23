@@ -15,7 +15,8 @@ app.use(cors());
 // Rotas relacionadas ao carrinho
 app.post('/cart/add', cartController.addToCart);
 app.get('/cart', cartController.getCartItems);
-app.delete('/cart/:cartItemId', cartController.removeFromCart);  // Corrigida
+app.delete('/cart/:cartItemId', cartController.removeFromCart);
+app.put('/update', cartController.updateCartItemQuantity);  // Corrigida
 
 // Rotas relacionadas aos favoritos
 app.get('/favorite', favoriteController.getFavorites);

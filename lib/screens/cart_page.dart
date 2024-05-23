@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/cart_item.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart'; // Importe o pacote url_launcher
+import 'package:url_launcher/url_launcher.dart';
 import '../models/product.dart';
 
 class CartPage extends StatefulWidget {
@@ -19,6 +19,8 @@ class _CartPageState extends State<CartPage> {
     futureCartItems = _fetchCartItems();
   }
 
+  
+
   Future<List<CartItem>> _fetchCartItems() async {
     final url = Uri.parse('http://localhost:3333/cart');
     final response = await http.get(url);
@@ -31,25 +33,29 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<void> _removeCartItem(int cartItemId) async {
-    final url = Uri.parse('http://localhost:3333/cart/$cartItemId');
-    final response = await http.delete(url);
+    try {
+      final url = Uri.parse('http://localhost:3333/cart/$cartItemId');
+      final response = await http.delete(url);
 
-    if (response.statusCode == 200) {
-      setState(() {
-        futureCartItems = _fetchCartItems();
-      });
-    } else {
-      throw Exception('Erro ao remover item do carrinho');
+      if (response.statusCode == 200) {
+        setState(() {
+          futureCartItems = _fetchCartItems();
+        });
+      } else {
+        throw Exception('Erro ao remover item do carrinho');
+      }
+    } catch (error) {
+      _showErrorDialog('Erro ao remover item do carrinho', error.toString());
     }
   }
 
-  Future<void> _addCartItem(int productId) async {
+  Future<void> _updateCartItemQuantity(int cartItemId, int newQuantity) async {
     try {
-      final url = Uri.parse('http://localhost:3333/cart/add');
-      final response = await http.post(
+      final url = Uri.parse('http://localhost:3333/update');
+      final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'productId': productId}),
+        body: jsonEncode({'cartItemId': cartItemId, 'quantity': newQuantity}),
       );
 
       if (response.statusCode == 200) {
@@ -57,28 +63,10 @@ class _CartPageState extends State<CartPage> {
           futureCartItems = _fetchCartItems();
         });
       } else {
-        throw Exception('Erro ao adicionar item ao carrinho');
+        throw Exception('Erro ao atualizar quantidade do item no carrinho');
       }
     } catch (error) {
-      print('Erro ao adicionar item ao carrinho: $error');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Erro ao adicionar item ao carrinho'),
-            content: Text(
-                'Houve um erro ao adicionar o item ao carrinho. Por favor, tente novamente mais tarde.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Fechar'),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog('Erro ao atualizar quantidade do item no carrinho', error.toString());
     }
   }
 
@@ -90,7 +78,6 @@ class _CartPageState extends State<CartPage> {
       for (final CartItem item in cartItems) {
         total += item.product.price * item.quantity;
       }
-      print('Total: $total');
 
       final response = await http.post(
         url,
@@ -104,38 +91,17 @@ class _CartPageState extends State<CartPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('Response data: $data');
         if (data.isNotEmpty && data['checkoutURL'] != null) {
           final checkoutURL = data['checkoutURL'];
-          print('Checkout URL: $checkoutURL');
           _launchCheckout(checkoutURL);
         } else {
-          throw Exception(
-              'URL de checkout não encontrada na resposta da API');
+          throw Exception('URL de checkout não encontrada na resposta da API');
         }
       } else {
         throw Exception('Erro ao criar pagamento: ${response.statusCode}');
       }
     } catch (error) {
-      print('Erro ao criar pagamento: $error');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Erro ao criar pagamento'),
-            content: Text(
-                'Houve um erro ao criar o pagamento. Por favor, tente novamente mais tarde.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Fechar'),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog('Erro ao criar pagamento', error.toString());
     }
   }
 
@@ -143,9 +109,28 @@ class _CartPageState extends State<CartPage> {
     if (await canLaunch(checkoutURL)) {
       await launch(checkoutURL);
     } else {
-      throw Exception(
-          'Não foi possível abrir o link de checkout: $checkoutURL');
+      throw Exception('Não foi possível abrir o link de checkout: $checkoutURL');
     }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -164,7 +149,23 @@ class _CartPageState extends State<CartPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Erro: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Seu carrinho está vazio'));
+                          return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/imagens/cart.png',
+                          width: 100, 
+                          height: 100,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'SEU CARRINHO ESTÁ VAZIO!',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  );
           } else {
             Map<int, CartItem> groupedItems = {};
             snapshot.data!.forEach((item) {
@@ -172,8 +173,7 @@ class _CartPageState extends State<CartPage> {
                 groupedItems[item.product.id] = CartItem(
                   id: item.id,
                   product: item.product,
-                  quantity: groupedItems[item.product.id]!.quantity +
-                      item.quantity, 
+                  quantity: groupedItems[item.product.id]!.quantity + item.quantity,
                 );
               } else {
                 groupedItems[item.product.id] = item;
@@ -195,32 +195,58 @@ class _CartPageState extends State<CartPage> {
                         color: Colors.white70,
                         margin: EdgeInsets.all(8),
                         child: Container(
-                          height: 80, // Defina a altura conforme necessário
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            leading: Image.network(item.product.image),
-                            title: Text(item.product.title),
-                            subtitle: Text('Quantidade: ${item.quantity}'),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Total: \$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            children: [
+                              Image.network(item.product.image, width: 50, height: 50),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(item.product.title),
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.remove),
+                                          onPressed: item.quantity > 1
+                                              ? () {
+                                                  _updateCartItemQuantity(item.id, item.quantity - 1);
+                                                }
+                                              : null,
+                                        ),
+                                        Text('${item.quantity}'),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () {
+                                            _updateCartItemQuantity(item.id, item.quantity + 1);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(width: 16), // Espaço entre os elementos
-                                IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red,),
-                                  onPressed: () {
-                                    _removeCartItem(item.id).then((_) {
-                                          // Após a remoção bem-sucedida, atualize os itens do carrinho
-                              setState(() {
-                                  futureCartItems = _fetchCartItems();
+                              ),
+                              SizedBox(width: 16),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'Total: \$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red,),
+                                    onPressed: () {
+                                      _removeCartItem(item.id).then((_) {
+                                        setState(() {
+                                          futureCartItems = _fetchCartItems();
+                                        });
                                       });
-                                });
-                                  },
-                                ),
-                              ],
-                            ),
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );
